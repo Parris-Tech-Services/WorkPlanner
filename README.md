@@ -7,10 +7,13 @@ A calm, practical reference app for the DCS, Census and Avance work transition.
 - Persistent Pending / Plan A / Plan B scenario selection
 - Live next-up summary and key milestones
 - Interactive decision checklist saved in the browser
+- Rolling two-week agenda with workload pulse and milestone countdown
+- Clickable calendar days with personal notes saved in the browser
+- Plan A / Plan B workload comparison
 - Full monthly schedule with work-type filters
 - Calendar export as an `.ics` file
 - Phase map, protected anchors and copyable message for Andy
-- Responsive and print-friendly layout
+- Responsive, print-friendly and installable offline layout
 
 ## Run locally
 

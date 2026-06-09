@@ -1,0 +1,17 @@
+{
+  "name": "DCS, Census & Avance Work Planner",
+  "short_name": "Work Planner",
+  "description": "A calm, practical reference for the DCS, Census and Avance work transition.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f1e9",
+  "theme_color": "#183333",
+  "icons": [
+    {
+      "src": "work-planner-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

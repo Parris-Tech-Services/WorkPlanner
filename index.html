@@ -8,6 +8,8 @@
       content="A clear, flexible reference for the DCS, Census and Avance work transition."
     />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23183333'/%3E%3Cpath d='M9 21v-7m7 7V9m7 12v-9' stroke='%23efc976' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#183333" />
     <title>Work Planner | DCS, Census & Avance</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,6 +36,7 @@
 
       <nav class="main-nav" aria-label="Primary navigation">
         <a class="active" href="#overview">Overview</a>
+        <a href="#agenda">Agenda</a>
         <a href="#calendar">Calendar</a>
         <a href="#reference">Reference</a>
       </nav>
@@ -152,6 +155,37 @@
         <div class="decision-list" id="decision-list"></div>
       </section>
 
+      <section class="agenda-section section-shell" id="agenda" aria-labelledby="agenda-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Next two weeks</p>
+            <h2 id="agenda-title">What needs your energy</h2>
+          </div>
+          <p>The useful middle distance: close enough to act on, long enough to see pressure building.</p>
+        </div>
+        <div class="agenda-layout">
+          <div class="agenda-list" id="agenda-list"></div>
+          <aside class="load-panel">
+            <div>
+              <p class="eyebrow">Workload pulse</p>
+              <h3 id="load-title">Balanced fortnight</h3>
+              <p id="load-description">Your protected days are holding and the work pattern has room to breathe.</p>
+            </div>
+            <div class="load-meter" aria-label="Workload meter"><span id="load-meter-fill"></span></div>
+            <div class="load-stats">
+              <div><strong id="work-days-count">0</strong><span>Work days</span></div>
+              <div><strong id="protected-days-count">0</strong><span>Protected days</span></div>
+              <div><strong id="sunday-work-count">0</strong><span>Possible Sun PMs</span></div>
+            </div>
+            <div class="next-milestone">
+              <span>Next milestone</span>
+              <strong id="countdown-title">DCS last day</strong>
+              <small id="countdown-label">In 24 days</small>
+            </div>
+          </aside>
+        </div>
+      </section>
+
       <section class="calendar-section section-shell" id="calendar" aria-labelledby="calendar-title">
         <div class="section-heading calendar-heading">
           <div>
@@ -159,6 +193,7 @@
             <h2 id="calendar-title">See the whole rhythm</h2>
           </div>
           <div class="calendar-tools">
+            <button class="button button-secondary today-button" type="button">Today</button>
             <div class="month-nav" aria-label="Calendar month navigation">
               <button class="icon-button" id="previous-month" type="button" aria-label="Previous month">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
@@ -254,6 +289,7 @@
               <span>Plan B</span>
               <p><strong>No Census offer</strong><small>DCS ends 17 July · Avance 0.8 from 20 July</small></p>
             </div>
+            <div class="comparison-stats" id="comparison-stats"></div>
           </article>
         </div>
       </section>
@@ -265,6 +301,25 @@
     </footer>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <dialog class="day-dialog" id="day-dialog">
+      <form method="dialog" class="day-dialog-shell">
+        <button class="icon-button dialog-close" type="submit" aria-label="Close day details">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </button>
+        <p class="eyebrow" id="dialog-eyebrow">Day details</p>
+        <h2 id="dialog-date">Wednesday, 10 June</h2>
+        <div class="dialog-event" id="dialog-event"></div>
+        <label class="note-field">
+          <span>Personal note</span>
+          <textarea id="day-note" rows="4" placeholder="Add an appointment, reminder, or anything you want kept with this day..."></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button class="button button-primary save-note-button" type="button">Save note</button>
+          <button class="text-button delete-note-button" type="button">Clear note</button>
+        </div>
+      </form>
+    </dialog>
 
     <script src="app.js"></script>
   </body>

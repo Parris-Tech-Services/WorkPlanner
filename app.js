@@ -83,6 +83,23 @@ const phases = [
   },
 ];
 
+const milestones = {
+  pending: [
+    { date: "2026-07-03", title: "DCS last day" },
+    { date: "2026-07-09", title: "Census proposed start" },
+    { date: "2026-10-01", title: "Final Census day" },
+  ],
+  "plan-a": [
+    { date: "2026-07-03", title: "DCS last day" },
+    { date: "2026-07-09", title: "Census starts" },
+    { date: "2026-10-01", title: "Final Census day" },
+  ],
+  "plan-b": [
+    { date: "2026-07-17", title: "DCS last day" },
+    { date: "2026-07-20", title: "Avance 0.8 begins" },
+  ],
+};
+
 const dateFromISO = (iso) => new Date(`${iso}T12:00:00`);
 const toISO = (date) => {
   const year = date.getFullYear();
@@ -92,6 +109,11 @@ const toISO = (date) => {
 };
 const addDays = (date, count) => new Date(date.getTime() + count * DAY_MS);
 const isBetween = (iso, start, end) => iso >= start && iso <= end;
+const formatLongDate = (iso) =>
+  dateFromISO(iso).toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" });
+const getNotes = () => JSON.parse(localStorage.getItem("work-planner-notes") || "{}");
+const escapeHTML = (value) =>
+  value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
 function event(type, title, detail = "") {
   return { type, title, detail };
@@ -204,7 +226,9 @@ function renderScenario() {
   document.querySelector("#calendar-note").textContent = details.calendarNote;
 
   renderSnapshot();
+  renderAgenda();
   renderCalendar();
+  renderComparison();
 }
 
 function renderSnapshot() {
@@ -225,11 +249,74 @@ function renderSnapshot() {
     return;
   }
   document.querySelector("#next-up-title").textContent = next.title;
-  document.querySelector("#next-up-date").textContent = dateFromISO(next.date).toLocaleDateString("en-AU", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
+  document.querySelector("#next-up-date").textContent = formatLongDate(next.date);
+}
+
+function getAgendaStart() {
+  const today = toISO(new Date());
+  if (today < PLAN_START) return dateFromISO(PLAN_START);
+  if (today > PLAN_END) return dateFromISO(PLAN_END);
+  return dateFromISO(today);
+}
+
+function renderAgenda() {
+  const notes = getNotes();
+  const start = getAgendaStart();
+  const days = Array.from({ length: 14 }, (_, index) => {
+    const date = addDays(start, index);
+    const iso = toISO(date);
+    return { date: iso, scheduleEvent: getEventForDate(iso, scenario), note: notes[iso] };
   });
+  const workTypes = ["avance", "census", "dcs", "transition"];
+  const workDays = days.filter((day) => workTypes.includes(day.scheduleEvent?.type)).length;
+  const protectedDays = days.filter((day) => ["off", "church"].includes(day.scheduleEvent?.type)).length;
+  const sundayWork = days.filter((day) => day.scheduleEvent?.title.includes("Census PM")).length;
+  const loadPercent = Math.round((workDays / 14) * 100);
+  const loadTitle = workDays >= 10 ? "A demanding fortnight" : workDays >= 8 ? "A full but workable fortnight" : "A balanced fortnight";
+  const loadDescription =
+    workDays >= 10
+      ? "There is not much slack here. Keep Tuesday protected and treat Sunday Census work as optional."
+      : workDays >= 8
+        ? "The rhythm is busy but the protected days still create useful recovery space."
+        : "Your protected days are holding and the work pattern has room to breathe.";
+
+  document.querySelector("#agenda-list").innerHTML = days
+    .map(({ date, scheduleEvent, note }) => {
+      const parsed = dateFromISO(date);
+      const dateLabel = parsed.toLocaleDateString("en-AU", { weekday: "short", day: "numeric" });
+      const item = scheduleEvent || event("off", "Unscheduled", "No plan set for this day");
+      return `
+        <button class="agenda-item" type="button" data-date="${date}">
+          <span class="agenda-date">${dateLabel}</span>
+          <span class="agenda-marker" data-type="${item.type}"></span>
+          <span class="agenda-copy">
+            <strong>${item.title}</strong>
+            <small>${note ? `Note: ${escapeHTML(note)}` : item.detail}</small>
+          </span>
+          ${note ? '<span class="note-badge">Note</span>' : ""}
+        </button>
+      `;
+    })
+    .join("");
+
+  document.querySelector("#work-days-count").textContent = workDays;
+  document.querySelector("#protected-days-count").textContent = protectedDays;
+  document.querySelector("#sunday-work-count").textContent = sundayWork;
+  document.querySelector("#load-meter-fill").style.width = `${loadPercent}%`;
+  document.querySelector("#load-title").textContent = loadTitle;
+  document.querySelector("#load-description").textContent = loadDescription;
+
+  const today = toISO(new Date());
+  const upcomingMilestone = milestones[scenario].find((item) => item.date >= today);
+  const nextMilestone = upcomingMilestone || milestones[scenario].at(-1);
+  const daysUntil = Math.max(0, Math.ceil((dateFromISO(nextMilestone.date) - dateFromISO(today)) / DAY_MS));
+  document.querySelector("#countdown-title").textContent = nextMilestone.title;
+  document.querySelector("#countdown-label").textContent =
+    !upcomingMilestone
+      ? `Completed ${formatLongDate(nextMilestone.date)}`
+      : daysUntil === 0
+        ? "Today"
+        : `${formatLongDate(nextMilestone.date)} · ${daysUntil} day${daysUntil === 1 ? "" : "s"} away`;
 }
 
 function renderDecisions() {
@@ -297,6 +384,7 @@ function renderCalendar() {
 
   const todayIso = toISO(new Date());
   const { start, end } = getCalendarBounds();
+  const notes = getNotes();
   const cells = [];
   let cursor = start;
 
@@ -307,19 +395,73 @@ function renderCalendar() {
     const filtered = scheduleEvent && activeFilter !== "all" && scheduleEvent.type !== activeFilter;
 
     cells.push(`
-      <div class="calendar-cell ${muted ? "muted" : ""} ${iso === todayIso ? "today" : ""}">
+      <button class="calendar-cell ${muted ? "muted" : ""} ${iso === todayIso ? "today" : ""}" type="button" data-date="${iso}" aria-label="${formatLongDate(iso)}">
         <span class="calendar-date">${cursor.getDate()}</span>
         ${
           scheduleEvent
             ? `<span class="calendar-event ${filtered ? "filtered" : ""}" data-type="${scheduleEvent.type}" title="${scheduleEvent.detail}">${scheduleEvent.title}</span>`
             : ""
         }
-      </div>
+        ${notes[iso] ? '<span class="calendar-note-dot" title="Personal note saved"></span>' : ""}
+      </button>
     `);
     cursor = addDays(cursor, 1);
   }
 
   document.querySelector("#calendar-grid").innerHTML = cells.join("");
+}
+
+function getScenarioMetrics(scenarioName) {
+  const schedule = buildSchedule(scenarioName).filter((item) => item.date <= "2026-10-01");
+  const workTypes = ["avance", "census", "dcs", "transition"];
+  return {
+    workDays: schedule.filter((item) => workTypes.includes(item.type)).length,
+    censusDays: schedule.filter((item) => item.type === "census").length,
+    saturdayWork: schedule.filter((item) => item.type === "census" && dateFromISO(item.date).getDay() === 6).length,
+    possibleSundays: schedule.filter((item) => item.title.includes("Census PM")).length,
+  };
+}
+
+function renderComparison() {
+  const planA = getScenarioMetrics("plan-a");
+  const planB = getScenarioMetrics("plan-b");
+  document.querySelector("#comparison-stats").innerHTML = `
+    <div class="comparison-stat-head"><span>Through 1 Oct</span><strong>Plan A</strong><strong>Plan B</strong></div>
+    <div><span>Total work days</span><strong>${planA.workDays}</strong><strong>${planB.workDays}</strong></div>
+    <div><span>Census days</span><strong>${planA.censusDays}</strong><strong>${planB.censusDays}</strong></div>
+    <div><span>Working Saturdays</span><strong>${planA.saturdayWork}</strong><strong>${planB.saturdayWork}</strong></div>
+    <div><span>Possible Sunday PMs</span><strong>${planA.possibleSundays}</strong><strong>${planB.possibleSundays}</strong></div>
+  `;
+}
+
+let selectedDate = null;
+function openDayDialog(iso) {
+  selectedDate = iso;
+  const scheduleEvent = getEventForDate(iso, scenario) || event("off", "Unscheduled", "No plan set for this day");
+  const notes = getNotes();
+  const dialog = document.querySelector("#day-dialog");
+  document.querySelector("#dialog-eyebrow").textContent = scenarioDetails[scenario].title;
+  document.querySelector("#dialog-date").textContent = formatLongDate(iso);
+  document.querySelector("#dialog-event").innerHTML = `
+    <span class="dialog-event-marker" data-type="${scheduleEvent.type}"></span>
+    <div><strong>${scheduleEvent.title}</strong><p>${scheduleEvent.detail}</p></div>
+  `;
+  document.querySelector("#day-note").value = notes[iso] || "";
+  document.querySelector(".delete-note-button").hidden = !notes[iso];
+  dialog.showModal();
+}
+
+function saveSelectedNote() {
+  if (!selectedDate) return;
+  const notes = getNotes();
+  const note = document.querySelector("#day-note").value.trim();
+  if (note) notes[selectedDate] = note;
+  else delete notes[selectedDate];
+  localStorage.setItem("work-planner-notes", JSON.stringify(notes));
+  document.querySelector("#day-dialog").close();
+  renderAgenda();
+  renderCalendar();
+  showToast(note ? "Day note saved." : "Day note cleared.");
 }
 
 function escapeICS(value) {
@@ -401,6 +543,29 @@ document.querySelector("#next-month").addEventListener("click", () => {
   renderCalendar();
 });
 
+document.querySelector(".today-button").addEventListener("click", () => {
+  const today = new Date();
+  const target = toISO(today) < PLAN_START ? dateFromISO(PLAN_START) : today;
+  visibleMonth = new Date(target.getFullYear(), target.getMonth(), 1, 12);
+  renderCalendar();
+});
+
+document.querySelector("#calendar-grid").addEventListener("click", (event) => {
+  const cell = event.target.closest("[data-date]");
+  if (cell) openDayDialog(cell.dataset.date);
+});
+
+document.querySelector("#agenda-list").addEventListener("click", (event) => {
+  const item = event.target.closest("[data-date]");
+  if (item) openDayDialog(item.dataset.date);
+});
+
+document.querySelector(".save-note-button").addEventListener("click", saveSelectedNote);
+document.querySelector(".delete-note-button").addEventListener("click", () => {
+  document.querySelector("#day-note").value = "";
+  saveSelectedNote();
+});
+
 document.querySelectorAll(".export-button").forEach((button) => button.addEventListener("click", exportCalendar));
 document.querySelector(".print-button").addEventListener("click", () => window.print());
 
@@ -422,7 +587,11 @@ const sectionObserver = new IntersectionObserver(
   { rootMargin: "-40% 0px -55%" },
 );
 
-["overview", "calendar", "reference"].forEach((id) => sectionObserver.observe(document.querySelector(`#${id}`)));
+["overview", "agenda", "calendar", "reference"].forEach((id) => sectionObserver.observe(document.querySelector(`#${id}`)));
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/service-worker.js"));
+}
 
 renderDecisions();
 renderPhases();
