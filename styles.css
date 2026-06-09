@@ -181,7 +181,13 @@ svg {
   box-shadow: 0 3px 10px rgba(24, 51, 51, 0.08);
 }
 
-.site-header > .icon-button {
+.header-actions {
+  display: flex;
+  justify-self: end;
+  gap: 7px;
+}
+
+.header-actions .icon-button {
   justify-self: end;
 }
 

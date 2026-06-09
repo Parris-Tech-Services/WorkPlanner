@@ -41,11 +41,24 @@
         <a href="#reference">Reference</a>
       </nav>
 
-      <button class="icon-button print-button" type="button" aria-label="Print plan" title="Print plan">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 14h10v7H7z" />
-        </svg>
-      </button>
+      <div class="header-actions">
+        <button class="icon-button backup-button" type="button" aria-label="Download planner backup" title="Download planner backup">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" />
+          </svg>
+        </button>
+        <button class="icon-button restore-button" type="button" aria-label="Restore planner backup" title="Restore planner backup">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21V9m0 0 4 4m-4-4-4 4M5 3h14" />
+          </svg>
+        </button>
+        <input id="planner-backup-input" type="file" accept="application/json,.json" hidden />
+        <button class="icon-button print-button" type="button" aria-label="Print plan" title="Print plan">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 14h10v7H7z" />
+          </svg>
+        </button>
+      </div>
     </header>
 
     <main>

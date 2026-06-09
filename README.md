@@ -12,6 +12,7 @@ A calm, practical reference app for the DCS, Census and Avance work transition.
 - Plan A / Plan B workload comparison
 - Full monthly schedule with work-type filters
 - Calendar export as an `.ics` file
+- Portable JSON backup and restore for scenarios, decisions and day notes
 - Phase map, protected anchors and copyable message for Andy
 - Responsive, print-friendly and installable offline layout
 

@@ -503,6 +503,57 @@ function exportCalendar() {
   showToast("Calendar exported.");
 }
 
+function downloadPlannerBackup() {
+  const backup = {
+    app: "work-planner",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    scenario,
+    decisions: JSON.parse(localStorage.getItem("work-planner-decisions") || "[]"),
+    notes: getNotes(),
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `work-planner-backup-${toISO(new Date())}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  showToast("Planner backup downloaded.");
+}
+
+async function restorePlannerBackup(event) {
+  const [file] = event.target.files;
+  event.target.value = "";
+  if (!file) return;
+
+  try {
+    const backup = JSON.parse(await file.text());
+    const validScenario = Object.hasOwn(scenarioDetails, backup.scenario);
+    const validDecisions =
+      Array.isArray(backup.decisions) &&
+      backup.decisions.every((item) => Number.isInteger(item) && item >= 0 && item < decisions.length);
+    const validNotes =
+      backup.notes &&
+      typeof backup.notes === "object" &&
+      !Array.isArray(backup.notes) &&
+      Object.values(backup.notes).every((note) => typeof note === "string");
+
+    if (backup.app !== "work-planner" || backup.version !== 1 || !validScenario || !validDecisions || !validNotes) {
+      throw new Error("Unsupported planner backup");
+    }
+
+    scenario = backup.scenario;
+    localStorage.setItem("work-planner-scenario", scenario);
+    localStorage.setItem("work-planner-decisions", JSON.stringify([...new Set(backup.decisions)]));
+    localStorage.setItem("work-planner-notes", JSON.stringify(backup.notes));
+    renderDecisions();
+    renderScenario();
+    showToast("Planner backup restored.");
+  } catch {
+    showToast("That file is not a valid planner backup.");
+  }
+}
+
 let toastTimer;
 function showToast(message) {
   const toast = document.querySelector("#toast");
@@ -567,6 +618,9 @@ document.querySelector(".delete-note-button").addEventListener("click", () => {
 });
 
 document.querySelectorAll(".export-button").forEach((button) => button.addEventListener("click", exportCalendar));
+document.querySelector(".backup-button").addEventListener("click", downloadPlannerBackup);
+document.querySelector(".restore-button").addEventListener("click", () => document.querySelector("#planner-backup-input").click());
+document.querySelector("#planner-backup-input").addEventListener("change", restorePlannerBackup);
 document.querySelector(".print-button").addEventListener("click", () => window.print());
 
 document.querySelector(".copy-button").addEventListener("click", async (event) => {
