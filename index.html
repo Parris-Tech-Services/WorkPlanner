@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A clear, flexible reference for the DCS, Census and Avance work transition."
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23183333'/%3E%3Cpath d='M9 21v-7m7 7V9m7 12v-9' stroke='%23efc976' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <title>Work Planner | DCS, Census & Avance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#overview" aria-label="Work Planner home">
+        <span class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <span>
+          <strong>Work Planner</strong>
+          <small>DCS · Census · Avance</small>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary navigation">
+        <a class="active" href="#overview">Overview</a>
+        <a href="#calendar">Calendar</a>
+        <a href="#reference">Reference</a>
+      </nav>
+
+      <button class="icon-button print-button" type="button" aria-label="Print plan" title="Print plan">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 14h10v7H7z" />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero" id="overview">
+        <div class="hero-copy">
+          <p class="eyebrow">Winter to spring · 2026</p>
+          <h1>A clear path through a season of change.</h1>
+          <p class="hero-intro">
+            Keep the important things anchored while work shifts around them. Tuesdays stay protected,
+            Sunday mornings stay for church, and the next decision is always visible.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#calendar">
+              View calendar
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </a>
+            <button class="button button-secondary export-button" type="button">
+              Export calendar
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" /></svg>
+            </button>
+          </div>
+        </div>
+
+        <aside class="scenario-card">
+          <div class="scenario-heading">
+            <div>
+              <p class="eyebrow">Current scenario</p>
+              <h2 id="scenario-title">Awaiting Census offer</h2>
+            </div>
+            <span class="status-dot" aria-hidden="true"></span>
+          </div>
+          <p id="scenario-description">
+            Both paths are ready. Keep the plan flexible until the Census offer is confirmed.
+          </p>
+          <div class="segmented-control" role="group" aria-label="Choose planning scenario">
+            <button class="active" type="button" data-scenario="pending">Pending</button>
+            <button type="button" data-scenario="plan-a">Plan A</button>
+            <button type="button" data-scenario="plan-b">Plan B</button>
+          </div>
+          <div class="scenario-rule">
+            <span>Next decision</span>
+            <strong id="next-decision">Wait for Census job offer confirmation</strong>
+          </div>
+        </aside>
+      </section>
+
+      <section class="snapshot section-shell" aria-labelledby="snapshot-title">
+        <div class="section-heading compact-heading">
+          <div>
+            <p class="eyebrow">At a glance</p>
+            <h2 id="snapshot-title">Your plan today</h2>
+          </div>
+          <p class="today-label" id="today-label"></p>
+        </div>
+        <div class="snapshot-grid">
+          <article class="snapshot-card next-card">
+            <div class="card-icon icon-next" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
+            </div>
+            <div>
+              <span>Next up</span>
+              <strong id="next-up-title">Avance</strong>
+              <small id="next-up-date">Wednesday, 10 June</small>
+            </div>
+          </article>
+          <article class="snapshot-card">
+            <div class="card-icon icon-anchor" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3v18M5 9h14M5 16a7 7 0 0 0 14 0M9 5h6" /></svg>
+            </div>
+            <div>
+              <span>Protected anchor</span>
+              <strong>Tuesdays off</strong>
+              <small>Appointments · admin · recovery</small>
+            </div>
+          </article>
+          <article class="snapshot-card">
+            <div class="card-icon icon-milestone" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M5 21V4m0 1h12l-2 4 2 4H5" /></svg>
+            </div>
+            <div>
+              <span>Key milestone</span>
+              <strong id="milestone-title">DCS last day · 3 July</strong>
+              <small id="milestone-note">Once the Census offer is confirmed</small>
+            </div>
+          </article>
+          <article class="snapshot-card">
+            <div class="card-icon icon-balance" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3v18M6 6h12M5 6l-3 6h6L5 6Zm14 0-3 6h6l-3-6ZM8 21h8" /></svg>
+            </div>
+            <div>
+              <span>Long-term rhythm</span>
+              <strong>Avance 0.8</strong>
+              <small>Mon · Wed · Thu · Fri</small>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="decision-section section-shell" aria-labelledby="decisions-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Decision path</p>
+            <h2 id="decisions-title">Do these in order</h2>
+          </div>
+          <p>Tick items as they happen. Your progress is saved on this device.</p>
+        </div>
+        <div class="decision-list" id="decision-list"></div>
+      </section>
+
+      <section class="calendar-section section-shell" id="calendar" aria-labelledby="calendar-title">
+        <div class="section-heading calendar-heading">
+          <div>
+            <p class="eyebrow">Working calendar</p>
+            <h2 id="calendar-title">See the whole rhythm</h2>
+          </div>
+          <div class="calendar-tools">
+            <div class="month-nav" aria-label="Calendar month navigation">
+              <button class="icon-button" id="previous-month" type="button" aria-label="Previous month">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+              </button>
+              <strong id="month-title">June 2026</strong>
+              <button class="icon-button" id="next-month" type="button" aria-label="Next month">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+              </button>
+            </div>
+            <button class="button button-secondary export-button" type="button">Export .ics</button>
+          </div>
+        </div>
+        <div class="legend" aria-label="Calendar legend">
+          <button class="legend-item active" type="button" data-filter="all"><i></i>All</button>
+          <button class="legend-item" type="button" data-filter="avance"><i></i>Avance</button>
+          <button class="legend-item" type="button" data-filter="census"><i></i>Census</button>
+          <button class="legend-item" type="button" data-filter="dcs"><i></i>DCS</button>
+          <button class="legend-item" type="button" data-filter="off"><i></i>Off & family</button>
+          <button class="legend-item" type="button" data-filter="church"><i></i>Church</button>
+        </div>
+        <div class="calendar-frame">
+          <div class="calendar-weekdays" aria-hidden="true">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+        <p class="calendar-note" id="calendar-note">
+          Pending view shows Plan A from 6 July as the working plan. Switch scenarios above to compare.
+        </p>
+      </section>
+
+      <section class="phases-section section-shell" aria-labelledby="phases-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Transition map</p>
+            <h2 id="phases-title">Four phases, one steady direction</h2>
+          </div>
+          <p>The work changes. The protected anchors do not.</p>
+        </div>
+        <div class="phase-track" id="phase-track"></div>
+      </section>
+
+      <section class="reference-section section-shell" id="reference" aria-labelledby="reference-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Reference desk</p>
+            <h2 id="reference-title">The details worth keeping close</h2>
+          </div>
+        </div>
+        <div class="reference-grid">
+          <article class="reference-card anchors-card">
+            <p class="eyebrow">Rules that do not move</p>
+            <h3>Your anchors</h3>
+            <ul class="anchor-list">
+              <li><span>Tue</span><div><strong>Protected day off</strong><small>Appointments, admin, recovery and family logistics.</small></div></li>
+              <li><span>Sun</span><div><strong>Church in the morning</strong><small>Census work only in the afternoon, and only if needed.</small></div></li>
+              <li><span>After</span><div><strong>Avance 0.8 rhythm</strong><small>Monday, Wednesday, Thursday and Friday.</small></div></li>
+            </ul>
+          </article>
+
+          <article class="reference-card message-card">
+            <p class="eyebrow">Ready-to-send note</p>
+            <h3>Message for Andy</h3>
+            <blockquote id="andy-message">
+              I’m keeping Tuesdays clear for appointments/admin. If Census starts Thursday 9 July,
+              I may need to keep that day for Census onboarding/start requirements, but I can confirm
+              once they send the offer details.
+            </blockquote>
+            <button class="text-button copy-button" type="button" data-copy-target="andy-message">
+              Copy message
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h11v11H8zM5 16H4V5h11v1" /></svg>
+            </button>
+          </article>
+
+          <article class="reference-card alert-card">
+            <p class="eyebrow">Watch point</p>
+            <h3>Thursday, 9 July</h3>
+            <p>
+              This is both the proposed Census start and a possible Avance day while Andy is in town.
+              Keep it uncommitted until Census confirms what onboarding requires.
+            </p>
+            <span class="alert-label">Avoid double-booking</span>
+          </article>
+
+          <article class="reference-card compare-card">
+            <p class="eyebrow">Fallback ready</p>
+            <h3>Plan A vs Plan B</h3>
+            <div class="compare-row">
+              <span>Plan A</span>
+              <p><strong>Census offer comes</strong><small>DCS ends 3 July · Census through 1 October</small></p>
+            </div>
+            <div class="compare-row">
+              <span>Plan B</span>
+              <p><strong>No Census offer</strong><small>DCS ends 17 July · Avance 0.8 from 20 July</small></p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Built from the DCS · Census · Avance work plan</p>
+      <a href="#overview">Back to top</a>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
