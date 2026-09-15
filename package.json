@@ -1,0 +1,9 @@
+{
+  "name": "work-planner",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check app.js && node --check planner-core.js && node --check podcast-dock.js && node --check service-worker.js && node --check podcast-bank.mjs",
+    "test": "npm run check && node --test tests/*.test.mjs"
+  }
+}
